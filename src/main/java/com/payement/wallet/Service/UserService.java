@@ -18,20 +18,21 @@ public class UserService {
     public boolean registerUser(RegisterUserReq req) {
         boolean userExistByEmail = userRepo.existsByEmail(req.getEmail());
         boolean userExistByPhoneNumber = userRepo.existsByPhoneNumber(req.getPhoneNumber());
-        if (!userExistByEmail && !userExistByPhoneNumber) {
-            return true;
+        if (userExistByEmail || userExistByPhoneNumber) {
+            return false;
         }
+        System.out.println("this is the username:" + req.getUsername());
         UserEntity user = UserEntity.builder()
                 .firstName(req.getFirstName())
                 .lastName(req.getLastName())
                 .otherNames(req.getOtherNames())
-                .username(req.getUsername())
+                .username(req.getUsername().trim())
                 .email(req.getEmail())
                 .password(req.getPassword())
                 .phoneNumber(req.getPhoneNumber())
                 .status(Status.UNVERIFIED)
-                .createdAt(LocalDateTime.now())
                 .build();
+
         return userRepo.save(user) != null;
     }
 }
