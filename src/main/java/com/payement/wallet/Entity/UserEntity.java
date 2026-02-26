@@ -37,5 +37,7 @@ public class UserEntity {
     private LocalDateTime createdAt;
     @CreationTimestamp
     private LocalDateTime updatedAt;
+    @OneToMany
+    private Account account;
 
 }
