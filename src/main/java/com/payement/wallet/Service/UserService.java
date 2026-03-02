@@ -32,7 +32,7 @@ public class UserService {
                 .phoneNumber(req.getPhoneNumber())
                 .status(Status.UNVERIFIED)
                 .build();
-
-        return userRepo.save(user) != null;
+        userRepo.save(user);
+        return true;
     }
 }
