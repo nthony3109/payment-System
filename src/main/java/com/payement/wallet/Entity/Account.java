@@ -1,10 +1,13 @@
 package com.payement.wallet.Entity;
 
+import com.payement.wallet.Enum.Currency;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,10 +24,12 @@ public class Account {
     private BigDecimal balance;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private UserEntity user_d;
-    @Version
-    private String currency;
+    private UserEntity user;
+    private Currency currency;
+    @CreationTimestamp
     private LocalDateTime createdAt;
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
+    @Version
     private Long version;
 }
