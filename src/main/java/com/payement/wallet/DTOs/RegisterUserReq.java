@@ -16,7 +16,7 @@ public class RegisterUserReq {
     private String lastName;
     private String otherNames;
     @NotEmpty
-    private String Username;
+    private String username;
     @NotEmpty
     @Email
     private String email;
