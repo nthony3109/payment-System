@@ -3,6 +3,7 @@ package com.payement.wallet.Service;
 import com.payement.wallet.Entity.Account;
 import com.payement.wallet.Exceptions.AccountNotFoundException;
 import com.payement.wallet.Exceptions.InsufficientFundException;
+import com.payement.wallet.Exceptions.InvalidPhoneNumberException;
 import com.payement.wallet.Repo.AccountRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,10 @@ public class AccountService {
 
     public String generateAccountNumber(String phoneNumber) {
         String accountNumber;
-        String trimPhoneNumber = phoneNumber.replaceAll("\\D+", "").trim()
-                ;
+        String trimPhoneNumber = phoneNumber.replaceAll("\\D+", "").trim();
+        if (trimPhoneNumber.length() < 11 ||  trimPhoneNumber.length() > 15) {
+            throw new InvalidPhoneNumberException("phone number must be between 9 and 15");
+        }
         if (trimPhoneNumber.startsWith("234")) {
             accountNumber = trimPhoneNumber.substring(3);
         }
