@@ -47,4 +47,12 @@ public class AccountService {
         accountRepo.save(account);
         return true;
     }
+
+    public BigDecimal checkBalance(String accountNumber) {
+        Account account = accountRepo.findByAccountNumber(accountNumber);
+        if (account == null) {
+            throw new AccountNotFoundException("no account found with the account number");
+        }
+        return account.getBalance();
+    }
 }
