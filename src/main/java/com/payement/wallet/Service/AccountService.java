@@ -36,6 +36,15 @@ public class AccountService {
         account.setBalance(account.getBalance().add(amount));
         accountRepo.save(account);
         return true;
+    }
 
+    public boolean withdraw(BigDecimal amount, String accountNumber) {
+        Account account = accountRepo.findByAccountNumber(accountNumber);
+        if (account == null) {
+            throw new AccountNotFoundException("no account found with the account number");
+        }
+        account.setBalance(account.getBalance().subtract(amount));
+        accountRepo.save(account);
+        return true;
     }
 }
