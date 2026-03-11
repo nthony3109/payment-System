@@ -2,6 +2,7 @@ package com.payement.wallet.Service;
 
 import com.payement.wallet.Entity.Account;
 import com.payement.wallet.Exceptions.AccountNotFoundException;
+import com.payement.wallet.Exceptions.InsufficientFundException;
 import com.payement.wallet.Repo.AccountRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,9 @@ public class AccountService {
         if (account == null) {
             throw new AccountNotFoundException("no account found with the account number");
         }
+        if (account.getBalance().compareTo(amount) < 0) {
+            throw new InsufficientFundException("insufficient fund");
+        }
         account.setBalance(account.getBalance().subtract(amount));
         accountRepo.save(account);
         return true;
@@ -55,4 +59,6 @@ public class AccountService {
         }
         return account.getBalance();
     }
+
+
 }
