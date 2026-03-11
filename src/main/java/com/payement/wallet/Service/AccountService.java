@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 public class AccountService {
     private final AccountRepo accountRepo;
 
-    public String createAccountNumber(String phoneNumber) {
+    public String generateAccountNumber(String phoneNumber) {
         String accountNumber;
         String trimPhoneNumber = phoneNumber.replaceAll("\\D+", "").trim()
                 ;
