@@ -17,7 +17,5 @@ public enum Status {
     DECLINED,
     DENIED,
     CREATED,
-    ACTIVATED
-
 
 }
