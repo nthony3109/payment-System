@@ -1,6 +1,6 @@
 package com.payement.wallet.Enum;
 
-public enum TnxType {
+public enum Transactiontype {
     DEPOSIT,
     TRANSFER
 }
