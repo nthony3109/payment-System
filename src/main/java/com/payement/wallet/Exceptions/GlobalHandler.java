@@ -41,6 +41,18 @@ public class GlobalHandler {
         return buildErrorResponse(ErrorCode.ACCCOUNT_NOT_FOUND, ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    public ResponseEntity<Map<String,Object>> handleInsufficientFundException(InsufficientFundException ex) {
+        return buildErrorResponse(ErrorCode.INSUFFICIENT_FUND, ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity<Map<String, Object>> handleInvalidPhoneNumberException(InvalidPhoneNumberException ex) {
+        return buildErrorResponse(ErrorCode.INVALID_PHONE_NUMBER, ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity<Map<String, Object>> handleInvalidAmountException(InvalidDepositAmountException ex) {
+        return buildErrorResponse(ErrorCode.INVALID_AMOUNT, ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     private ResponseEntity<Map<String, Object>> buildErrorResponse(ErrorCode code, String message, HttpStatus status) {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("errorCode", code);
