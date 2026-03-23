@@ -2,6 +2,7 @@ package com.payement.wallet.Service;
 
 import com.payement.wallet.DTOs.TransferReq;
 import com.payement.wallet.Entity.Account;
+import com.payement.wallet.Entity.Transaction;
 import com.payement.wallet.Entity.UserEntity;
 import com.payement.wallet.Enum.Currency;
 import com.payement.wallet.Exceptions.AccountNotFoundException;
@@ -9,6 +10,7 @@ import com.payement.wallet.Exceptions.InsufficientFundException;
 import com.payement.wallet.Exceptions.InvalidDepositAmountException;
 import com.payement.wallet.Exceptions.InvalidPhoneNumberException;
 import com.payement.wallet.Repo.AccountRepo;
+import com.payement.wallet.Repo.TransactionRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,8 +21,10 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class AccountService {
     private final AccountRepo accountRepo;
+    private  final TransactionService transactionService;
+    private final TransactionRepo transactionRepo;
 
-
+    //to create account for new users
     public Account createAccount(UserEntity user) {
         String phoneNumber = user.getPhoneNumber();
         String accountNumber = generateAccountNumber(phoneNumber);
@@ -33,6 +37,7 @@ public class AccountService {
         return accountRepo.save(account);
     }
 
+    // to generate account number
     public String generateAccountNumber(String phoneNumber) {
         String accountNumber;
         String trimPhoneNumber = phoneNumber.replaceAll("\\D+", "").trim();
@@ -56,6 +61,7 @@ public class AccountService {
                 );
     }
 
+     // to get account by account by account number
     public Account getAccountByAccountNumber(String accountNumber) {
         Account account = accountRepo.findByAccountNumber(accountNumber);
         if (account == null) {
@@ -63,7 +69,7 @@ public class AccountService {
         }
         return account;
     }
-
+    // to deposit funds
     public boolean deposit (BigDecimal amount, String accountNumber) {
 
         Account account = accountRepo.findByAccountNumber(accountNumber);
@@ -75,9 +81,10 @@ public class AccountService {
         }
         account.setBalance(account.getBalance().add(amount));
         accountRepo.save(account);
+        transactionService.logDepositTransaction(account,amount);
         return true;
     }
-
+    // to withdraw funds
     public boolean withdraw(BigDecimal amount, String accountNumber) {
         Account account = accountRepo.findByAccountNumber(accountNumber);
         if (account == null) {
@@ -90,7 +97,7 @@ public class AccountService {
         accountRepo.save(account);
         return true;
     }
-
+    // to fetch balance
     public BigDecimal checkBalance(String accountNumber) {
         Account account = accountRepo.findByAccountNumber(accountNumber);
         if (account == null) {
@@ -99,6 +106,8 @@ public class AccountService {
         return account.getBalance();
     }
 
+
+// to tansfer funds
     @Transactional
     public Account transfer(TransferReq req) {
         Account fromAccount = accountRepo.findByAccountNumber(req.getFromAccountNumber());
@@ -116,6 +125,7 @@ public class AccountService {
         toAccount.setBalance(toAccount.getBalance().add(req.getAmount()));
         accountRepo.save(fromAccount);
         accountRepo.save(toAccount);
+        transactionService.logTransferTransaction(fromAccount, toAccount, req.getAmount(),req.getDescription());
         return fromAccount;
     }
 
