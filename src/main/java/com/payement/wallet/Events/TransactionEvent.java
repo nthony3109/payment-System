@@ -15,7 +15,7 @@ public class TransactionEvent extends ApplicationEvent  {
     private final BigDecimal amount;
     private final Transactiontype transactionType;
 
-    //my  constructor class as @RequiredArgConstructor does not work here
+    //my  constructor class as
     public TransactionEvent(Object source, Account fromAccount, BigDecimal amount,
                             Account toAccount, Transactiontype transactionType) {
         super(source);
