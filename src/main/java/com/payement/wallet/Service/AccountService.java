@@ -2,7 +2,6 @@ package com.payement.wallet.Service;
 
 import com.payement.wallet.DTOs.TransferReq;
 import com.payement.wallet.Entity.Account;
-import com.payement.wallet.Entity.Transaction;
 import com.payement.wallet.Entity.UserEntity;
 import com.payement.wallet.Enum.Currency;
 import com.payement.wallet.Exceptions.AccountNotFoundException;
@@ -61,7 +60,7 @@ public class AccountService {
                 );
     }
 
-     // to get account by account by account number
+     // to get account by account number
     public Account getAccountByAccountNumber(String accountNumber) {
         Account account = accountRepo.findByAccountNumber(accountNumber);
         if (account == null) {
@@ -107,27 +106,7 @@ public class AccountService {
     }
 
 
-// to tansfer funds
-    @Transactional
-    public Account transfer(TransferReq req) {
-        Account fromAccount = accountRepo.findByAccountNumber(req.getFromAccountNumber());
-        if (fromAccount == null) {
-            throw new AccountNotFoundException("sender account not found");
-        }
-        Account toAccount = accountRepo.findByAccountNumber(req.getToAccountNumber());
-        if (toAccount == null) {
-            throw new AccountNotFoundException(" receiver account not found");
-        }
-        if (fromAccount.getBalance().compareTo(req.getAmount()) < 0) {
-            throw new InsufficientFundException("insufficient fund");
-        }
-        fromAccount.setBalance(fromAccount.getBalance().subtract(req.getAmount()));
-        toAccount.setBalance(toAccount.getBalance().add(req.getAmount()));
-        accountRepo.save(fromAccount);
-        accountRepo.save(toAccount);
-        transactionService.logTransferTransaction(fromAccount, toAccount, req.getAmount(),req.getDescription());
-        return fromAccount;
-    }
+
 
 
 }
