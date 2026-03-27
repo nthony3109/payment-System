@@ -1,10 +1,14 @@
 package com.payement.wallet.Service;
 
+import com.payement.wallet.DTOs.TransferReq;
 import com.payement.wallet.Entity.Account;
 import com.payement.wallet.Entity.Transaction;
 import com.payement.wallet.Enum.Status;
 import com.payement.wallet.Enum.Transactiontype;
+import com.payement.wallet.Exceptions.AccountNotFoundException;
+import com.payement.wallet.Exceptions.InsufficientFundException;
 import com.payement.wallet.Repo.TransactionRepo;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +23,29 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TransactionService {
   private  final TransactionRepo transactionRepo;
+
+    // to transfer funds
+    @Transactional
+    public Account transfer(TransferReq req) {
+        Account fromAccount = accountRepo.findByAccountNumber(req.getFromAccountNumber());
+        if (fromAccount == null) {
+            throw new AccountNotFoundException("sender account not found");
+        }
+        Account toAccount = accountRepo.findByAccountNumber(req.getToAccountNumber());
+        if (toAccount == null) {
+            throw new AccountNotFoundException(" receiver account not found");
+        }
+        if (fromAccount.getBalance().compareTo(req.getAmount()) < 0) {
+            throw new InsufficientFundException("insufficient fund");
+        }
+        fromAccount.setBalance(fromAccount.getBalance().subtract(req.getAmount()));
+        toAccount.setBalance(toAccount.getBalance().add(req.getAmount()));
+        accountRepo.save(fromAccount);
+        accountRepo.save(toAccount);
+        transactionService.logTransferTransaction(fromAccount, toAccount, req.getAmount(),req.getDescription());
+        return fromAccount;
+    }
+
     public Transaction logDepositTransaction(Account toaccount, BigDecimal amount) {
         String transactionRef = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toLowerCase();
         Transaction transaction= Transaction.builder()
