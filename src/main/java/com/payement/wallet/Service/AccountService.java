@@ -68,21 +68,7 @@ public class AccountService {
         }
         return account;
     }
-    // to deposit funds
-    public boolean deposit (BigDecimal amount, String accountNumber) {
 
-        Account account = accountRepo.findByAccountNumber(accountNumber);
-        if (account == null) {
-            throw new AccountNotFoundException("account number is not found");
-        }
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new InvalidDepositAmountException("amount must be greater than zero");
-        }
-        account.setBalance(account.getBalance().add(amount));
-        accountRepo.save(account);
-        transactionService.logDepositTransaction(account,amount);
-        return true;
-    }
     // to withdraw funds
     public boolean withdraw(BigDecimal amount, String accountNumber) {
         Account account = accountRepo.findByAccountNumber(accountNumber);
