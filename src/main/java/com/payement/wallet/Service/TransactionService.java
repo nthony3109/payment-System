@@ -7,6 +7,7 @@ import com.payement.wallet.Enum.Status;
 import com.payement.wallet.Enum.Transactiontype;
 import com.payement.wallet.Exceptions.AccountNotFoundException;
 import com.payement.wallet.Exceptions.InsufficientFundException;
+import com.payement.wallet.Repo.AccountRepo;
 import com.payement.wallet.Repo.TransactionRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TransactionService {
   private  final TransactionRepo transactionRepo;
+  private  final AccountRepo accountRepo;
 
     // to transfer funds
     @Transactional
@@ -42,7 +44,7 @@ public class TransactionService {
         toAccount.setBalance(toAccount.getBalance().add(req.getAmount()));
         accountRepo.save(fromAccount);
         accountRepo.save(toAccount);
-        transactionService.logTransferTransaction(fromAccount, toAccount, req.getAmount(),req.getDescription());
+        logTransferTransaction(fromAccount, toAccount, req.getAmount(),req.getDescription());
         return fromAccount;
     }
 
