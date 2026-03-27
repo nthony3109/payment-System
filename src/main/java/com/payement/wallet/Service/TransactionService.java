@@ -45,7 +45,7 @@ public class TransactionService {
 
     // to transfer funds
     @Transactional
-    public Account transfer(TransferReq req) {
+    public Transaction transfer(TransferReq req) {
         Account fromAccount = accountRepo.findByAccountNumber(req.getFromAccountNumber());
         if (fromAccount == null) {
             throw new AccountNotFoundException("sender account not found");
@@ -57,13 +57,16 @@ public class TransactionService {
         if (fromAccount.getBalance().compareTo(req.getAmount()) < 0) {
             throw new InsufficientFundException("insufficient fund");
         }
+        if (req.getAmount().compareTo(BigDecimal.ZERO) < 10) {
+            //create invalid transfer amounnt exception and throw it  here
+        }
+
         fromAccount.setBalance(fromAccount.getBalance().subtract(req.getAmount()));
         toAccount.setBalance(toAccount.getBalance().add(req.getAmount()));
         accountRepo.save(fromAccount);
         accountRepo.save(toAccount);
-        logTransferTransaction(fromAccount, toAccount, req.getAmount(),req.getDescription());
-        return fromAccount;
-    }
+        return logTransferTransaction(fromAccount, toAccount, req.getAmount(),req.getDescription());
+            }
 
     public Transaction logDepositTransaction(Account toaccount, BigDecimal amount) {
         String transactionRef = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toLowerCase();
