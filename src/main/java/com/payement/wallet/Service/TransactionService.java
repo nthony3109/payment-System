@@ -7,6 +7,7 @@ import com.payement.wallet.Enum.Status;
 import com.payement.wallet.Enum.Transactiontype;
 import com.payement.wallet.Exceptions.AccountNotFoundException;
 import com.payement.wallet.Exceptions.InsufficientFundException;
+import com.payement.wallet.Exceptions.InvalidDepositAmountException;
 import com.payement.wallet.Repo.AccountRepo;
 import com.payement.wallet.Repo.TransactionRepo;
 import jakarta.transaction.Transactional;
@@ -25,6 +26,22 @@ import java.util.UUID;
 public class TransactionService {
   private  final TransactionRepo transactionRepo;
   private  final AccountRepo accountRepo;
+
+    // to deposit funds
+    public Transaction deposit (BigDecimal amount, String accountNumber) {
+
+        Account account = accountRepo.findByAccountNumber(accountNumber);
+        if (account == null) {
+            throw new AccountNotFoundException("account number is not found");
+        }
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidDepositAmountException("amount must be greater than zero");
+        }
+        account.setBalance(account.getBalance().add(amount));
+        accountRepo.save(account);
+
+        return logDepositTransaction(account,amount);
+    }
 
     // to transfer funds
     @Transactional
