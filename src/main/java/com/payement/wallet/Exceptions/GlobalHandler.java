@@ -49,8 +49,8 @@ public class GlobalHandler {
         return buildErrorResponse(ErrorCode.INVALID_PHONE_NUMBER, ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
      public ResponseEntity<Map<String, Object>> handleInvalidTransferAmount(invalidTransferAmount ex) {
-        return buildErrorResponse(ErrorCode.INVALID_AMOUNT, ex.getMessage(), HttpStatus.BAD_REQUEST);
-
+         return buildErrorResponse(ErrorCode.INVALID_AMOUNT, ex.getMessage(), HttpStatus.BAD_REQUEST);
+     }
     public ResponseEntity<Map<String, Object>> handleInvalidAmountException(InvalidDepositAmountException ex) {
         return buildErrorResponse(ErrorCode.INVALID_AMOUNT, ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
@@ -60,5 +60,6 @@ public class GlobalHandler {
         errorResponse.put("errorCode", code);
         errorResponse.put("message", message);
         errorResponse.put("timestamp", LocalDateTime.now());
-        return ResponseEntity.status(status).body(errorResponse); }
+        return ResponseEntity.status(status).body(errorResponse);
+    }
 }
