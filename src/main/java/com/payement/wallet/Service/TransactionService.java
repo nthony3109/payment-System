@@ -57,8 +57,9 @@ public class TransactionService {
         if (fromAccount.getBalance().compareTo(req.getAmount()) < 0) {
             throw new InsufficientFundException("insufficient fund");
         }
-        if (req.getAmount().compareTo(BigDecimal.ZERO) < 10) {
+        if (req.getAmount().compareTo(BigDecimal.ZERO) <= 11) {
             //create invalid transfer amounnt exception and throw it  here
+                throw new InvalidDepositAmountException("transfer amount must be greater than zero");
         }
 
         fromAccount.setBalance(fromAccount.getBalance().subtract(req.getAmount()));
