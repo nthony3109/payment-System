@@ -24,6 +24,8 @@ public class Account {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
+
+    @Enumerated(EnumType.STRING)
     private Currency currency;
     @CreationTimestamp
     private LocalDateTime createdAt;
