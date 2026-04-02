@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -35,6 +36,8 @@ public class Account {
     @Version
     private Long version;
 
-    @OneToMany
-    private List <Transaction> transaction;
+    @OneToMany(mappedBy = "fromAccount",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
+    private List <Transaction> fromAccountTransaction = new ArrayList<>();
+    @OneToMany(mappedBy = "toAccount",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
+    private List <Transaction> toAccountTransaction = new ArrayList<>();
 }
