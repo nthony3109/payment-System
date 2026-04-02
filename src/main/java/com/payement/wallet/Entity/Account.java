@@ -23,6 +23,7 @@ public class Account {
     private Long id;
     private String accountNumber;
     private BigDecimal balance;
+    private long transactionPin;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
