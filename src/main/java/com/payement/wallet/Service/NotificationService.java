@@ -23,7 +23,7 @@ public class NotificationService {
         Account account = accountRepo.findByAccountNumber(accountNumber);
         UserEntity user = account.getUser();
         if (user == null) {
-            throw new AccountNotFoundException("account not find to fetch notifications");
+            throw new AccountNotFoundException("account not found to fetch notifications");
         }
         return user;
     }
@@ -32,8 +32,8 @@ public class NotificationService {
 
         return repo.findByUser(getUser(accountNumber));
     }
-    public List<Notification> FilterNotification(String AccounntNumber) {
-        return repo.findByUserAndIsViewed(getUser(AccounntNumber));
+    public List<Notification> FilterNotification(String AccountNumber) {
+        return repo.findByUserAndIsViewed(getUser(AccountNumber));
     }
     //continue with the count method to return readed and un read messages number
 }
