@@ -19,6 +19,7 @@ public class NotificationService {
     private final UserRepo userRepo;
     private final AccountRepo accountRepo;
 
+    // to user for notification operation
     private UserEntity getUser(String accountNumber){
         Account account = accountRepo.findByAccountNumber(accountNumber);
         UserEntity user = account.getUser();
@@ -32,8 +33,13 @@ public class NotificationService {
 
         return repo.findByUser(getUser(accountNumber));
     }
-    public List<Notification> FilterNotification(String AccountNumber) {
-        return repo.findByUserAndIsViewed(getUser(AccountNumber));
+    //readOrUnread must be true for read messages and false for unread messages
+    public List<Notification> FilterNotification(String AccountNumber, boolean readOrUnread) {
+        return repo.findByUserAndIsViewed(getUser(AccountNumber),readOrUnread);
     }
-    //continue with the count method to return readed and un read messages number
+    //continue with the count method to return read and unread messages number
+    public long countReadAndUnreadmessages(UserEntity user, boolean readOrUnread) {
+        return repo.coutByUserAndIsViewed(getUser("accountNumber"),readOrUnread);
+
+    }
 }
