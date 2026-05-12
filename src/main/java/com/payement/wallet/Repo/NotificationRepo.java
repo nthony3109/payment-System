@@ -9,6 +9,6 @@ import java.util.List;
 public interface NotificationRepo extends JpaRepository<Notification,Long> {
    
     List<Notification>findByUser(UserEntity user);
-    List<Notification>findByUserAndIsViewed(UserEntity user);
+    List<Notification>findByUserAndIsViewed(UserEntity user, boolean readOrunread);
     long coutByUserAndIsViewed(UserEntity user, boolean falseOrTrue);
 }
