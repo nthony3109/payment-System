@@ -12,6 +12,7 @@ import com.payement.wallet.Repo.AccountRepo;
 import com.payement.wallet.Repo.TransactionRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionService {
   private  final TransactionRepo transactionRepo;
   private  final AccountRepo accountRepo;
@@ -39,7 +41,7 @@ public class TransactionService {
         }
         account.setBalance(account.getBalance().add(amount));
         accountRepo.save(account);
-
+    log.info("handing over to logMethod to create transaction");
         return logDepositTransaction(account,amount);
     }
 
@@ -70,7 +72,9 @@ public class TransactionService {
             }
 
     public Transaction logDepositTransaction(Account toaccount, BigDecimal amount) {
+        log.info("inside logDepositTransaction method to create transaction");
         String transactionRef = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toLowerCase();
+        log.info("buiding transaction object with account {}  and amount of {}",toaccount,amount);
         Transaction transaction= Transaction.builder()
                 .toAccount(toaccount)
                 .transactionAmount(amount)
@@ -82,6 +86,7 @@ public class TransactionService {
                 .transactionStatus(Status.SUCCESSFUL)
                 .completedAt(LocalDateTime.now())
                 .build();
+        log.info("transaction object built: {}", transaction);
         return transactionRepo.save(transaction);
     }
     public Transaction logTransferTransaction(Account fromAccount, Account toAccount, BigDecimal amount, String description) {
