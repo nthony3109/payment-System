@@ -1,16 +1,14 @@
 package com.payement.wallet.Service;
 
-import com.payement.wallet.DTOs.TransferReq;
 import com.payement.wallet.Entity.Account;
 import com.payement.wallet.Entity.UserEntity;
 import com.payement.wallet.Enum.Currency;
 import com.payement.wallet.Exceptions.AccountNotFoundException;
 import com.payement.wallet.Exceptions.InsufficientFundException;
-import com.payement.wallet.Exceptions.InvalidDepositAmountException;
 import com.payement.wallet.Exceptions.InvalidPhoneNumberException;
 import com.payement.wallet.Repo.AccountRepo;
 import com.payement.wallet.Repo.TransactionRepo;
-import jakarta.transaction.Transactional;
+import com.payement.wallet.Service.Implementations.TransactionServiceImple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +18,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class AccountService {
     private final AccountRepo accountRepo;
-    private  final TransactionService transactionService;
+    private  final TransactionServiceImple transactionService;
     private final TransactionRepo transactionRepo;
 
     //to create account for new users
