@@ -1,7 +1,9 @@
 package com.payement.wallet.Repo;
 
+import com.payement.wallet.DTOs.TransactionHistory;
 import com.payement.wallet.Entity.Account;
 import com.payement.wallet.Entity.Transaction;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -11,4 +13,5 @@ public interface TransactionRepo extends JpaRepository<Transaction, Long> {
     List<Transaction>findByToAccount(Account account);
     Transaction findByTransactionRef(String ref);
     List<Transaction> findByTransactionType(Enum transactionType);
+    List<Transaction> findByFromAccountOrToAccount(Account fromAccount, Account toAccount, Pageable pageable);
 }
