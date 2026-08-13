@@ -1,6 +1,7 @@
 package com.payement.wallet.Entity;
 
 import com.payement.wallet.Enum.Currency;
+import com.payement.wallet.Enum.Status;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -34,11 +35,14 @@ public class Account {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     @Version
     private Long version;
 
     @OneToMany(mappedBy = "fromAccount",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
     private List <Transaction> fromAccountTransaction = new ArrayList<>();
+
     @OneToMany(mappedBy = "toAccount",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
     private List <Transaction> toAccountTransaction = new ArrayList<>();
 }
