@@ -1,16 +1,18 @@
 package com.payement.wallet.Controller;
 
 import com.payement.wallet.DTOs.RegisterUserReq;
-import com.payement.wallet.Service.UserService;
+import com.payement.wallet.DTOs.VerifyOtpReq;
+import com.payement.wallet.Service.Implementations.UserServiceImple;
+import com.payement.wallet.Service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
-public class Controller {
+public class UserController {
    private  final UserService userService;
 
 
@@ -30,4 +32,15 @@ public class Controller {
          }
         return ResponseEntity.ok("registration successful");
     }
+
+    @PostMapping("verify")
+    @Operation(summary = "Endpoint to verify a user")
+    public ResponseEntity<?> verifyUser(@RequestBody VerifyOtpReq req) {
+         String userId = req.getUserId();
+         String otp = String.valueOf(req.getUserId());
+         userService.verifyOtp(userId,otp);
+
+        return ResponseEntity.ok("verification successful ");
+    }
+
 }
