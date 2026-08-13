@@ -54,6 +54,9 @@ public class GlobalHandler {
     public ResponseEntity<Map<String, Object>> handleInvalidAmountException(InvalidDepositAmountException ex) {
         return buildErrorResponse(ErrorCode.INVALID_AMOUNT, ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
+    public ResponseEntity<Map<String,Object>> handleAccountOperationException (AccountOperationException ex) {
+        return  buildErrorResponse(ErrorCode.CONSTRAINT_VIOLATION, ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
 
     private ResponseEntity<Map<String, Object>> buildErrorResponse(ErrorCode code, String message, HttpStatus status) {
         Map<String, Object> errorResponse = new HashMap<>();
