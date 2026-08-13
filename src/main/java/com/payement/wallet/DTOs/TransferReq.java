@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 @Getter
 public class TransferReq {
     private String fromAccountNumber;
+    private String transactionRef;
     private String toAccountNumber;
     private BigDecimal amount;
+    private  String description;
 }
