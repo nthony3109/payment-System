@@ -10,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterUserReq {
+    private  Long id;
     @NotEmpty
     private String firstName;
     @NotEmpty
