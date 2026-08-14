@@ -15,5 +15,6 @@ public enum Status {
     REJECTED,
     RECEIVED,
     DECLINED,
-
+    IN_PROGRESS,
+    FROZEN
 }
