@@ -3,6 +3,7 @@ package com.payement.wallet.KafkaGroup;
 import com.payement.wallet.Enum.Currency;
 import com.payement.wallet.Enum.Status;
 import com.payement.wallet.Enum.Transactiontype;
+import com.payement.wallet.Enum.TransferType;
 import lombok.Builder;
 
 import java.math.BigDecimal;
@@ -18,6 +19,13 @@ public record TransactionKafkaPayLoad(
         String toAccountNumber,
         Status status,
         Transactiontype type,
-        LocalDateTime completedAt
+        LocalDateTime transactionDate,
+        String senderEmail,
+        BigDecimal senderOldBalance,
+        BigDecimal senderNewBalance,
+        String receiverEmail,
+        BigDecimal receiverOldBalance,
+        BigDecimal receiverNewBalance
+
 ) {
 }
