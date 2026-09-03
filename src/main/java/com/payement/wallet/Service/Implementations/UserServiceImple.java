@@ -99,4 +99,8 @@ private  final EmailService emailService;
         userRepo.save(user);
 
     }
+
+    public  String getUserEmail(String phoneNUmber) {
+        return userRepo.findByPhoneNumber(phoneNUmber).getEmail();
+    }
 }
