@@ -5,10 +5,13 @@ import com.payement.wallet.Entity.Account;
 import com.payement.wallet.Entity.Transaction;
 import com.payement.wallet.Enum.Status;
 import com.payement.wallet.Enum.Transactiontype;
+import com.payement.wallet.Enum.TransferType;
 import com.payement.wallet.Exceptions.AccountNotFoundException;
 import com.payement.wallet.Exceptions.AccountOperationException;
 import com.payement.wallet.Exceptions.InsufficientFundException;
 import com.payement.wallet.Exceptions.InvalidDepositAmountException;
+import com.payement.wallet.KafkaGroup.TransactionKafkaPayLoad;
+import com.payement.wallet.KafkaGroup.TransactionProducerService;
 import com.payement.wallet.Repo.AccountRepo;
 import com.payement.wallet.Repo.TransactionRepo;
 import com.payement.wallet.Service.interfaces.TransactionService;
@@ -33,6 +36,9 @@ import java.util.UUID;
 public class TransactionServiceImple implements TransactionService {
   private  final TransactionRepo transactionRepo;
   private  final AccountRepo accountRepo;
+  private final TransactionProducerService producerService;
+  private  final  AccountServiceImple accountService;
+  private final UserServiceImple user;
 
     // to deposit funds
     @Override
@@ -49,16 +55,43 @@ public class TransactionServiceImple implements TransactionService {
         if (req.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidDepositAmountException("amount must be greater than zero");
         }
+
+        BigDecimal receiverOldBalance  = accountService.checkBalance(req.getAccountNumber());
+        String receiverEmail = account.getUser().getEmail();
+
         account.setBalance(account.getBalance().add(req.getAmount()));
         accountRepo.save(account);
+        BigDecimal receiverNewBalance = accountService.checkBalance(req.getAccountNumber());
     log.info("handing over to logMethod to create transaction");
-        return logDepositTransaction(account,req.getAmount());
+        DepositRes res = logDepositTransaction(account,req.getAmount());
+
+        TransactionKafkaPayLoad payLoad = new TransactionKafkaPayLoad(
+                res.getTransactionRef(),
+                res.getAmount(),
+                res.getCurrency(),
+                res.getDescription(),
+                null,
+                res.getToAccountNumber(),
+                Status.SUCCESSFUL,
+                Transactiontype.DEPOSIT,LocalDateTime.now(),
+                null,null,null,
+                receiverEmail,
+                receiverOldBalance,
+                receiverNewBalance
+
+
+        );
+
+        producerService.publishTransaction(payLoad);
+        log.info("deposit success and pulished to kafka");
+        return res;
     }
 
     // to transfer/withdraw funds
     @Override
     @Transactional
     public TransferRes transfer(TransferReq req) {
+
         // check for idempotency
         Transaction tnx = transactionRepo.findByTransactionRef(req.getTransactionRef());
         if (tnx != null) {
@@ -89,11 +122,40 @@ public class TransactionServiceImple implements TransactionService {
         if (req.getAmount().compareTo(BigDecimal.ZERO) <= 0)
             throw new InvalidDepositAmountException("transfer amount must be greater than zero");
 
+        String senderEmail = fromAccount.getUser().getEmail();
+        BigDecimal senderOldBalance = accountService.checkBalance(req.getFromAccountNumber());
+
+        String receiverEmail = toAccount.getUser().getEmail();
+        BigDecimal receiverOldBalance = accountService.checkBalance(req.getToAccountNumber());
+
         fromAccount.setBalance(fromAccount.getBalance().subtract(req.getAmount()));
         toAccount.setBalance(toAccount.getBalance().add(req.getAmount()));
         accountRepo.save(fromAccount);
         accountRepo.save(toAccount);
-        return logTransferTransaction(fromAccount, toAccount, req.getAmount(),req.getDescription());
+
+        BigDecimal senderNewBalance = accountService.checkBalance(req.getFromAccountNumber());
+        BigDecimal receiverNewBalance = accountService.checkBalance(req.getToAccountNumber());
+
+        TransferRes res = logTransferTransaction(fromAccount, toAccount, req.getAmount(),req.getDescription());
+        TransactionKafkaPayLoad payLoad = new TransactionKafkaPayLoad(
+                res.getTransactionRef(),
+                res.getAmount(),
+                res.getCurrency(),
+                res.getDescription(),
+                req.getFromAccountNumber(),
+                res.getToAccountNumber(),
+                Status.SUCCESSFUL,
+                Transactiontype.TRANSFER,LocalDateTime.now(),
+                senderEmail,
+                senderOldBalance,
+                senderNewBalance,
+                receiverEmail,
+                receiverOldBalance,
+                receiverNewBalance
+
+        );
+        producerService.publishTransaction(payLoad);
+        return res;
             }
 
      //to  log the deposit activities
@@ -157,7 +219,7 @@ public class TransactionServiceImple implements TransactionService {
 
     // to return paginated transaction history
     @Override
-    public  List<TransactionHistory> getTransactionHistory(Account account, int page, int size) {
+    public  List<TransactionHistory> getTransactionHistoryByPage(Account account, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("transactionCreatedAt").descending());
         return  transactionRepo.findByFromAccountOrToAccount(account, account, pageable)
                 .stream().map(TransactionHistory ::new)
