@@ -1,6 +1,7 @@
 package com.payement.wallet.Service.interfaces;
 
 import com.payement.wallet.DTOs.RegisterUserReq;
+import com.payement.wallet.DTOs.UserProfileRes;
 import com.payement.wallet.Entity.UserEntity;
 
 public interface UserService {
@@ -11,5 +12,6 @@ public interface UserService {
     void  sendOtp(String mail,String otp);
     Long getUserId(String phoneNumber);
     void  setUserActive(Long id );
+    public UserProfileRes getUserProfile(String phoneNumber);
 
 }
